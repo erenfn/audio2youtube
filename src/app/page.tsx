@@ -133,8 +133,8 @@ export default function FileUploadValidationDemo() {
   );
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <div className="flex gap-8 w-full max-w-4xl">
+    <div className="flex items-center justify-center min-h-screen p-8">
+      <div className="flex flex-col sm:flex-row gap-8 w-full max-w-4xl">
         <FileUploadSection
           files={files}
           setFiles={setFiles}

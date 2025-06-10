@@ -59,7 +59,7 @@ export function YouTubeSection({
   }, [isAuthenticated]);
 
   return (
-    <div className="flex-1 border-l pl-8">
+    <div className="flex-1 border-t sm:border-t-0 sm:border-l pt-8 sm:pt-0 sm:pl-8">
       <div className="flex flex-col gap-2">
         {isAuthenticated && channelInfo && (
           <div className="flex items-center gap-3 mb-4">

@@ -144,7 +144,7 @@ export function FileUploadSection({
           <div className="space-y-2">
             <Label htmlFor="resolution">Resolution</Label>
             <Select value={resolution} onValueChange={(value) => setResolution(value as Resolution)}>
-              <SelectTrigger id="resolution">
+              <SelectTrigger id="resolution" className="w-full">
                 <SelectValue placeholder="Select resolution" />
               </SelectTrigger>
               <SelectContent>
@@ -158,7 +158,7 @@ export function FileUploadSection({
           <div className="space-y-2">
             <Label htmlFor="aspect-ratio">Aspect Ratio</Label>
             <Select value={aspectRatio} onValueChange={(value) => setAspectRatio(value as AspectRatio)}>
-              <SelectTrigger id="aspect-ratio">
+              <SelectTrigger id="aspect-ratio" className="w-full">
                 <SelectValue placeholder="Select aspect ratio" />
               </SelectTrigger>
               <SelectContent>
