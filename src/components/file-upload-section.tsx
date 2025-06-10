@@ -140,7 +140,7 @@ export function FileUploadSection({
       </FileUpload.Root>
 
       <div className="mt-4 space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="resolution">Resolution</Label>
             <Select value={resolution} onValueChange={(value) => setResolution(value as Resolution)}>
