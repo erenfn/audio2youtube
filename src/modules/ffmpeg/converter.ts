@@ -54,8 +54,12 @@ export class FFmpegConverter {
       this.abortController = new AbortController();
       const signal = this.abortController.signal;
 
+      // Get file extension and create appropriate input filename
+      const fileExtension = file.name.split('.').pop()?.toLowerCase() || 'mp3';
+      const inputFileName = `input.${fileExtension}`;
+
       // Write the input file to FFmpeg's virtual filesystem
-      await this.ffmpeg.writeFile('input.mp3', await fetchFile(file));
+      await this.ffmpeg.writeFile(inputFileName, await fetchFile(file));
 
       // Reset timing variables
       this.startTime = Date.now();
@@ -73,7 +77,7 @@ export class FFmpegConverter {
         };
 
         // Calculate remaining time
-        if (this.startTime && progress > 0.05) { // Only show estimate after 5% progress
+        if (this.startTime) {
           const elapsedTime = (Date.now() - this.startTime) / 1000; // in seconds
           const totalTime = elapsedTime / progress; // total estimated time
           const remaining = Math.ceil(totalTime - elapsedTime);
@@ -93,7 +97,7 @@ export class FFmpegConverter {
 
       // Get audio duration using ffprobe
       await this.ffmpeg.exec([
-        '-i', 'input.mp3',
+        '-i', inputFileName,
         '-f', 'null',
         '-'
       ]);
@@ -107,12 +111,13 @@ export class FFmpegConverter {
       await this.ffmpeg.exec([
         '-f', 'lavfi',
         '-i', `color=c=black:s=${dimensions.width}x${dimensions.height}:d=999999999`,
-        '-i', 'input.mp3',
+        '-i', inputFileName,
         '-c:v', 'libx264',
         '-preset', 'ultrafast',
         '-tune', 'zerolatency',
         '-crf', '35',
-        '-c:a', 'copy',
+        '-c:a', 'aac', // Convert audio to AAC for better compatibility
+        '-b:a', '192k', // Set audio bitrate
         '-shortest',
         'output.mp4'
       ]);
