@@ -67,6 +67,11 @@ export function useYoutubeAuth() {
       throw new Error('Not authenticated with YouTube');
     }
 
+    if (videoBlob.size === 0) {
+      toast.error('Cannot upload empty file to YouTube');
+      throw new Error('File size cannot be 0');
+    }
+
     try {
       setIsUploading(true);
       const videoUrl = await youtubeClient.uploadVideo(videoBlob, title, description, tags);

@@ -3,13 +3,12 @@ export class IndexedDBStorage {
   private storeName = 'convertedFiles';
   private db: IDBDatabase | null = null;
   private initPromise: Promise<void> | null = null;
-  private version = 1;
 
   private async ensureInitialized(): Promise<void> {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.version);
+      const request = indexedDB.open(this.dbName);
 
       request.onerror = () => {
         this.initPromise = null;
