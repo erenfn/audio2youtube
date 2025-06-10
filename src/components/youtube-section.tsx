@@ -89,7 +89,7 @@ export function YouTubeSection({
           variant="outline"
           className="w-full"
           onClick={isAuthenticated ? onUpload : onAuthenticate}
-          disabled={!convertedBlob || isUploading}
+          disabled={isUploading}
         >
           <Youtube className="size-4 mr-2" />
           {isAuthenticated ? 'Upload to YouTube' : 'Connect YouTube Account'}
