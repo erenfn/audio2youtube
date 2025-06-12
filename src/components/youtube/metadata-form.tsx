@@ -2,24 +2,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PillInput from "@/components/ui/pillInput";
 import * as React from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PrivacyStatus } from "@/modules/youtube/types";
 
 interface YouTubeMetadataFormProps {
   title: string;
   description: string;
   tags: string[];
-  isPrivate: boolean;
+  privacyStatus: PrivacyStatus;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onTagsChange: (values: string[]) => void;
-  onPrivacyChange: (isPrivate: boolean) => void;
+  onPrivacyChange: (status: PrivacyStatus) => void;
 }
 
 export function YouTubeMetadataForm({
   title,
   description,
   tags,
-  isPrivate,
+  privacyStatus,
   onTitleChange,
   onDescriptionChange,
   onTagsChange,
@@ -56,13 +57,18 @@ export function YouTubeMetadataForm({
         initialValues={tags}
       />
 
-      <div className="flex items-center space-x-2">
-        <Checkbox
-          id="youtube-privacy"
-          checked={isPrivate}
-          onCheckedChange={(checked) => onPrivacyChange(checked as boolean)}
-        />
-        <Label htmlFor="youtube-privacy">Make video private</Label>
+      <div className="space-y-2">
+        <Label htmlFor="youtube-privacy">Privacy Status</Label>
+        <Select value={privacyStatus} onValueChange={(value) => onPrivacyChange(value as PrivacyStatus)}>
+          <SelectTrigger id="youtube-privacy" className="w-full">
+            <SelectValue placeholder="Select privacy status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={PrivacyStatus.PUBLIC}>Public</SelectItem>
+            <SelectItem value={PrivacyStatus.PRIVATE}>Private</SelectItem>
+            <SelectItem value={PrivacyStatus.UNLISTED}>Unlisted</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

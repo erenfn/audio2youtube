@@ -8,6 +8,7 @@ import { YouTubeSection } from "@/components/youtube-section";
 import { useFileConversion } from "@/hooks/use-file-conversion";
 import { useYoutubeAuth } from "@/hooks/use-youtube-auth";
 import { downloadFile } from "@/utils/file";
+import { PrivacyStatus } from "@/modules/youtube/types";
 
 type Resolution = "1080p" | "720p" | "480p";
 type AspectRatio = "16:9" | "4:3" | "1:1";
@@ -17,7 +18,7 @@ export default function FileUploadValidationDemo() {
   const [youtubeTitle, setYoutubeTitle] = React.useState('');
   const [youtubeDescription, setYoutubeDescription] = React.useState('');
   const [youtubeTags, setYoutubeTags] = React.useState<string[]>([]);
-  const [isPrivate, setIsPrivate] = React.useState(true);
+  const [privacyStatus, setPrivacyStatus] = React.useState<PrivacyStatus>(PrivacyStatus.PRIVATE);
   const [resolution, setResolution] = React.useState<Resolution>("1080p");
   const [aspectRatio, setAspectRatio] = React.useState<AspectRatio>("16:9");
   const [conversionStartTime, setConversionStartTime] = React.useState<number | null>(null);
@@ -62,7 +63,7 @@ export default function FileUploadValidationDemo() {
         youtubeTitle || `Converted ${files[0].name}`,
         youtubeDescription || 'Uploaded via Audio2YouTube',
         youtubeTags,
-        isPrivate
+        privacyStatus
       );
 
       const uploadDuration = Math.floor((Date.now() - startTime) / 1000);
@@ -90,7 +91,7 @@ export default function FileUploadValidationDemo() {
         toast.error('Failed to upload to YouTube');
       }
     }
-  }, [convertedBlob, files, authenticate, uploadVideo, youtubeTitle, youtubeDescription, youtubeTags, isPrivate]);
+  }, [convertedBlob, files, authenticate, uploadVideo, youtubeTitle, youtubeDescription, youtubeTags, privacyStatus]);
 
   const onUpload: NonNullable<FileUploadProps["onUpload"]> = React.useCallback(
     async (files, { onProgress, onSuccess, onError }) => {
@@ -164,11 +165,11 @@ export default function FileUploadValidationDemo() {
           youtubeTitle={youtubeTitle}
           youtubeDescription={youtubeDescription}
           youtubeTags={youtubeTags}
-          isPrivate={isPrivate}
+          privacyStatus={privacyStatus}
           onTitleChange={setYoutubeTitle}
           onDescriptionChange={setYoutubeDescription}
           onTagsChange={setYoutubeTags}
-          onPrivacyChange={setIsPrivate}
+          onPrivacyChange={setPrivacyStatus}
           onAuthenticate={authenticate}
           onLogout={logout}
           onUpload={handleYoutubeUpload}

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { toast } from 'sonner';
 import { YouTubeClient } from '@/modules/youtube/client';
+import { PrivacyStatus } from '@/modules/youtube/types';
 
 export function useYoutubeAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -62,7 +63,7 @@ export function useYoutubeAuth() {
     title: string,
     description: string,
     tags?: string[],
-    isPrivate: boolean = true
+    privacyStatus: PrivacyStatus = PrivacyStatus.PRIVATE
   ) => {
     if (!isAuthenticated) {
       throw new Error('Not authenticated with YouTube');
@@ -75,7 +76,7 @@ export function useYoutubeAuth() {
 
     try {
       setIsUploading(true);
-      const videoUrl = await youtubeClient.uploadVideo(videoBlob, title, description, tags, isPrivate);
+      const videoUrl = await youtubeClient.uploadVideo(videoBlob, title, description, tags, privacyStatus);
       return videoUrl;
     } finally {
       setIsUploading(false);

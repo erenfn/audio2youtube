@@ -1,5 +1,7 @@
 'use client';
 
+import { PrivacyStatus } from './types';
+
 export interface YouTubeTokens {
   access_token: string;
   refresh_token: string;
@@ -58,7 +60,19 @@ export class YouTubeClient {
 
   handleAuthCallback(): boolean {
     const searchParams = new URLSearchParams(window.location.search);
-    return searchParams.get('auth') === 'success';
+    const code = searchParams.get('code');
+    const error = searchParams.get('error');
+    
+    if (error) {
+      console.error('Auth error:', error);
+      return false;
+    }
+    
+    if (!code) {
+      return false;
+    }
+    
+    return true;
   }
 
   async uploadVideo(
@@ -66,7 +80,7 @@ export class YouTubeClient {
     title: string, 
     description: string, 
     tags?: string[],
-    isPrivate: boolean = true
+    privacyStatus: PrivacyStatus = PrivacyStatus.PRIVATE
   ): Promise<string> {
     const startTime = Date.now();
     
@@ -91,7 +105,7 @@ export class YouTubeClient {
         title,
         description,
         tags,
-        isPrivate
+        privacyStatus
       }),
       credentials: 'include'
     });

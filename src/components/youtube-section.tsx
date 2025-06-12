@@ -4,6 +4,7 @@ import { YouTubeMetadataForm } from "@/components/youtube/metadata-form";
 import { useEffect, useState } from "react";
 import { YouTubeClient, YouTubeChannelInfo } from "@/modules/youtube/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { PrivacyStatus } from "@/modules/youtube/types";
 
 interface YouTubeSectionProps {
   isAuthenticated: boolean;
@@ -12,11 +13,11 @@ interface YouTubeSectionProps {
   youtubeTitle: string;
   youtubeDescription: string;
   youtubeTags: string[];
-  isPrivate: boolean;
+  privacyStatus: PrivacyStatus;
   onTitleChange: (title: string) => void;
   onDescriptionChange: (description: string) => void;
   onTagsChange: (tags: string[]) => void;
-  onPrivacyChange: (isPrivate: boolean) => void;
+  onPrivacyChange: (status: PrivacyStatus) => void;
   onAuthenticate: () => void;
   onLogout: () => void;
   onUpload: () => void;
@@ -29,7 +30,7 @@ export function YouTubeSection({
   youtubeTitle,
   youtubeDescription,
   youtubeTags,
-  isPrivate,
+  privacyStatus,
   onTitleChange,
   onDescriptionChange,
   onTagsChange,
@@ -83,7 +84,7 @@ export function YouTubeSection({
             title={youtubeTitle}
             description={youtubeDescription}
             tags={youtubeTags}
-            isPrivate={isPrivate}
+            privacyStatus={privacyStatus}
             onTitleChange={onTitleChange}
             onDescriptionChange={onDescriptionChange}
             onTagsChange={onTagsChange}

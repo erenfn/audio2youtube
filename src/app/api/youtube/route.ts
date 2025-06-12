@@ -5,6 +5,8 @@ import { oauth2Client} from './config';
 import { CodeChallengeMethod } from 'google-auth-library';
 import { Readable } from 'stream';
 import { cookies } from 'next/headers';
+import { PrivacyStatus } from '@/modules/youtube/types';
+
 const youtube = google.youtube('v3');
 
 import { generateCodeVerifier, generateCodeChallenge } from '@/modules/youtube/generatePKCECodes';
@@ -37,7 +39,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { videoBlob, title, description, tags, isPrivate } = await request.json();
+  const { videoBlob, title, description, tags, privacyStatus } = await request.json();
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
             tags: tags || []
           },
           status: {
-            privacyStatus: isPrivate ? 'private' : 'public',
+            privacyStatus: privacyStatus || PrivacyStatus.PRIVATE,
             selfDeclaredMadeForKids: false
           }
         },
