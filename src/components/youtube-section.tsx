@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { YouTubeClient, YouTubeChannelInfo } from "@/modules/youtube/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { PrivacyStatus } from "@/modules/youtube/types";
+import { Spinner } from "@/components/ui/spinner";
 
 interface YouTubeSectionProps {
   isAuthenticated: boolean;
   isUploading: boolean;
+  isLoading: boolean;
   convertedBlob: Blob | null;
   youtubeTitle: string;
   youtubeDescription: string;
@@ -26,6 +28,7 @@ interface YouTubeSectionProps {
 export function YouTubeSection({
   isAuthenticated,
   isUploading,
+  isLoading,
   convertedBlob,
   youtubeTitle,
   youtubeDescription,
@@ -66,7 +69,7 @@ export function YouTubeSection({
   return (
     <div className="flex-1 border-t sm:border-t-0 sm:border-l pt-8 sm:pt-0 sm:pl-8">
       <div className="flex flex-col gap-2">
-        {isAuthenticated && channelInfo && (
+        {isAuthenticated && !isLoading && channelInfo && (
           <div className="flex items-center gap-3 mb-4">
             <Avatar className="size-10">
               <AvatarImage src={channelInfo.thumbnailUrl} alt={channelInfo.title} />
@@ -96,16 +99,24 @@ export function YouTubeSection({
           variant="outline"
           className="w-full mt-2"
           onClick={isAuthenticated ? onUpload : onAuthenticate}
-          disabled={isUploading}
+          disabled={isUploading || isLoading}
         >
           <Youtube className="size-4 mr-2" />
           {isAuthenticated ? 'Upload to YouTube' : 'Connect YouTube Account'}
         </Button>
+
+        {isLoading && (
+          <div className="flex items-center justify-center py-4">
+            <Spinner size="medium" show={true}/>
+          </div>
+        )}
+
         {isAuthenticated && (
           <Button
             variant="ghost"
             className="w-full mt-2"
             onClick={onLogout}
+            disabled={isLoading}
           >
             Logout from YouTube
           </Button>

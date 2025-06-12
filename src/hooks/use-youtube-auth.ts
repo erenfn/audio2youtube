@@ -5,13 +5,18 @@ import { PrivacyStatus } from '@/modules/youtube/types';
 
 export function useYoutubeAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const youtubeClient = new YouTubeClient();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const isAuth = await youtubeClient.isAuthenticated();
-      setIsAuthenticated(isAuth);
+      try {
+        const isAuth = await youtubeClient.isAuthenticated();
+        setIsAuthenticated(isAuth);
+      } finally {
+        setIsLoading(false);
+      }
     };
     checkAuth();
   }, []);
@@ -43,19 +48,25 @@ export function useYoutubeAuth() {
   }, []);
 
   const authenticate = useCallback(async () => {
+    setIsLoading(true);
     try {
       const authUrl = await youtubeClient.authenticate();
       window.location.href = authUrl;
     } catch (error) {
-      console.error('Error authenticating with YouTube:', error);
-      toast.error('Failed to authenticate with YouTube');
+      console.error('Authentication error:', error);
+      setIsLoading(false);
     }
   }, []);
 
   const logout = useCallback(async () => {
-    youtubeClient.logout();
-    setIsAuthenticated(false);
-    toast.success('Successfully logged out from YouTube');
+    setIsLoading(true);
+    try {
+      await youtubeClient.logout();
+      setIsAuthenticated(false);
+      toast.success('Successfully logged out from YouTube');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const uploadVideo = useCallback(async (
@@ -85,6 +96,7 @@ export function useYoutubeAuth() {
 
   return {
     isAuthenticated,
+    isLoading,
     isUploading,
     authenticate,
     logout,

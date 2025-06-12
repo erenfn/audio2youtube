@@ -37,6 +37,7 @@ export default function FileUploadValidationDemo() {
   const {
     isAuthenticated,
     isUploading,
+    isLoading,
     authenticate,
     logout,
     uploadVideo
@@ -161,6 +162,7 @@ export default function FileUploadValidationDemo() {
         <YouTubeSection
           isAuthenticated={isAuthenticated}
           isUploading={isUploading}
+          isLoading={isLoading}
           convertedBlob={convertedBlob}
           youtubeTitle={youtubeTitle}
           youtubeDescription={youtubeDescription}

@@ -75,6 +75,41 @@ export class YouTubeClient {
     return true;
   }
 
+  private async refreshAccessToken(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/youtube/refresh', {
+        method: 'POST',
+        credentials: 'include',
+      });
+  
+      if (!response.ok) {
+        console.error('Failed to refresh access token');
+        return false;
+      }
+      await response.json();
+      return true;
+    } catch (error) {
+      console.error('Error refreshing access token:', error);
+      return false;
+    }
+  }
+
+  private async fetchWithAuthRetry(
+    input: RequestInfo,
+    init?: RequestInit
+  ): Promise<Response> {
+    let response = await fetch(input, { ...init, credentials: 'include' });
+
+    if (response.status === 401) {
+      const refreshed = await this.refreshAccessToken();
+      if (refreshed) {
+        response = await fetch(input, { ...init, credentials: 'include' });
+      }
+    }
+
+    return response;
+  }
+  
   async uploadVideo(
     videoBlob: Blob, 
     title: string, 
@@ -95,7 +130,7 @@ export class YouTubeClient {
       reader.readAsDataURL(videoBlob);
     });
 
-    const response = await fetch('/api/youtube', {
+    const response = await this.fetchWithAuthRetry('/api/youtube', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -106,8 +141,7 @@ export class YouTubeClient {
         description,
         tags,
         privacyStatus
-      }),
-      credentials: 'include'
+      })
     });
 
     const data = await response.json();
@@ -124,9 +158,7 @@ export class YouTubeClient {
 
   async isAuthenticated(): Promise<boolean> {
     try {
-      const response = await fetch('/api/youtube/channel', {
-        credentials: 'include'
-      });
+      const response = await this.fetchWithAuthRetry('/api/youtube/channel');
       
       if (response.ok) {
         const data = await response.json();
@@ -150,9 +182,7 @@ export class YouTubeClient {
       return this.channelInfo;
     }
 
-    const response = await fetch('/api/youtube/channel', {
-      credentials: 'include'
-    });
+    const response = await this.fetchWithAuthRetry('/api/youtube/channel');
 
     if (!response.ok) {
       throw new Error('Failed to fetch channel information');

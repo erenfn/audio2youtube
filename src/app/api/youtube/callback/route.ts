@@ -22,6 +22,10 @@ export async function GET(request: Request) {
 
     const response = NextResponse.redirect(`${FRONTEND_URL}?auth=success`);
 
+    // Log token expiration
+    const expiryDate = tokens.expiry_date ? new Date(tokens.expiry_date) : new Date(Date.now() + 3600000);
+    console.log('Initial auth - Access token expires at:', expiryDate.toLocaleString());
+
     // Set access token cookie
     response.cookies.set('access_token', tokens.access_token!, {
       httpOnly: true,
