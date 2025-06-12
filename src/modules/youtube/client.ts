@@ -61,7 +61,13 @@ export class YouTubeClient {
     return searchParams.get('auth') === 'success';
   }
 
-  async uploadVideo(videoBlob: Blob, title: string, description: string, tags?: string[]): Promise<string> {
+  async uploadVideo(
+    videoBlob: Blob, 
+    title: string, 
+    description: string, 
+    tags?: string[],
+    isPrivate: boolean = true
+  ): Promise<string> {
     const startTime = Date.now();
     
     // Convert blob to base64
@@ -84,7 +90,8 @@ export class YouTubeClient {
         videoBlob: base64data,
         title,
         description,
-        tags
+        tags,
+        isPrivate
       }),
       credentials: 'include'
     });

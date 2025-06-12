@@ -12,9 +12,11 @@ interface YouTubeSectionProps {
   youtubeTitle: string;
   youtubeDescription: string;
   youtubeTags: string[];
+  isPrivate: boolean;
   onTitleChange: (title: string) => void;
   onDescriptionChange: (description: string) => void;
   onTagsChange: (tags: string[]) => void;
+  onPrivacyChange: (isPrivate: boolean) => void;
   onAuthenticate: () => void;
   onLogout: () => void;
   onUpload: () => void;
@@ -27,9 +29,11 @@ export function YouTubeSection({
   youtubeTitle,
   youtubeDescription,
   youtubeTags,
+  isPrivate,
   onTitleChange,
   onDescriptionChange,
   onTagsChange,
+  onPrivacyChange,
   onAuthenticate,
   onLogout,
   onUpload,
@@ -79,15 +83,17 @@ export function YouTubeSection({
             title={youtubeTitle}
             description={youtubeDescription}
             tags={youtubeTags}
+            isPrivate={isPrivate}
             onTitleChange={onTitleChange}
             onDescriptionChange={onDescriptionChange}
             onTagsChange={onTagsChange}
+            onPrivacyChange={onPrivacyChange}
           />
         )}
         
         <Button
           variant="outline"
-          className="w-full"
+          className="w-full mt-2"
           onClick={isAuthenticated ? onUpload : onAuthenticate}
           disabled={isUploading}
         >

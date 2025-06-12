@@ -37,7 +37,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { videoBlob, title, description, tags } = await request.json();
+  const { videoBlob, title, description, tags, isPrivate } = await request.json();
   const cookieStore = await cookies();
   const accessToken = cookieStore.get('access_token')?.value;
   
@@ -67,7 +67,7 @@ export async function POST(request: Request) {
             tags: tags || []
           },
           status: {
-            privacyStatus: 'private',
+            privacyStatus: isPrivate ? 'private' : 'public',
             selfDeclaredMadeForKids: false
           }
         },

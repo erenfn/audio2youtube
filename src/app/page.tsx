@@ -17,6 +17,7 @@ export default function FileUploadValidationDemo() {
   const [youtubeTitle, setYoutubeTitle] = React.useState('');
   const [youtubeDescription, setYoutubeDescription] = React.useState('');
   const [youtubeTags, setYoutubeTags] = React.useState<string[]>([]);
+  const [isPrivate, setIsPrivate] = React.useState(true);
   const [resolution, setResolution] = React.useState<Resolution>("1080p");
   const [aspectRatio, setAspectRatio] = React.useState<AspectRatio>("16:9");
   const [conversionStartTime, setConversionStartTime] = React.useState<number | null>(null);
@@ -60,7 +61,8 @@ export default function FileUploadValidationDemo() {
         convertedBlob,
         youtubeTitle || `Converted ${files[0].name}`,
         youtubeDescription || 'Uploaded via Audio2YouTube',
-        youtubeTags
+        youtubeTags,
+        isPrivate
       );
 
       const uploadDuration = Math.floor((Date.now() - startTime) / 1000);
@@ -88,7 +90,7 @@ export default function FileUploadValidationDemo() {
         toast.error('Failed to upload to YouTube');
       }
     }
-  }, [convertedBlob, files, authenticate, uploadVideo, youtubeTitle, youtubeDescription, youtubeTags]);
+  }, [convertedBlob, files, authenticate, uploadVideo, youtubeTitle, youtubeDescription, youtubeTags, isPrivate]);
 
   const onUpload: NonNullable<FileUploadProps["onUpload"]> = React.useCallback(
     async (files, { onProgress, onSuccess, onError }) => {
@@ -162,9 +164,11 @@ export default function FileUploadValidationDemo() {
           youtubeTitle={youtubeTitle}
           youtubeDescription={youtubeDescription}
           youtubeTags={youtubeTags}
+          isPrivate={isPrivate}
           onTitleChange={setYoutubeTitle}
           onDescriptionChange={setYoutubeDescription}
           onTagsChange={setYoutubeTags}
+          onPrivacyChange={setIsPrivate}
           onAuthenticate={authenticate}
           onLogout={logout}
           onUpload={handleYoutubeUpload}

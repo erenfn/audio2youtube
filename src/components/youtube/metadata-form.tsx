@@ -2,23 +2,28 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import PillInput from "@/components/ui/pillInput";
 import * as React from "react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface YouTubeMetadataFormProps {
   title: string;
   description: string;
   tags: string[];
+  isPrivate: boolean;
   onTitleChange: (value: string) => void;
   onDescriptionChange: (value: string) => void;
   onTagsChange: (values: string[]) => void;
+  onPrivacyChange: (isPrivate: boolean) => void;
 }
 
 export function YouTubeMetadataForm({
   title,
   description,
   tags,
+  isPrivate,
   onTitleChange,
   onDescriptionChange,
   onTagsChange,
+  onPrivacyChange,
 }: YouTubeMetadataFormProps) {
   return (
     <div className="space-y-4 mb-4">
@@ -50,6 +55,15 @@ export function YouTubeMetadataForm({
         onChange={onTagsChange}
         initialValues={tags}
       />
+
+      <div className="flex items-center space-x-2">
+        <Checkbox
+          id="youtube-privacy"
+          checked={isPrivate}
+          onCheckedChange={(checked) => onPrivacyChange(checked as boolean)}
+        />
+        <Label htmlFor="youtube-privacy">Make video private</Label>
+      </div>
     </div>
   );
 } 

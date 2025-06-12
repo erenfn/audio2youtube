@@ -61,7 +61,8 @@ export function useYoutubeAuth() {
     videoBlob: Blob,
     title: string,
     description: string,
-    tags?: string[]
+    tags?: string[],
+    isPrivate: boolean = true
   ) => {
     if (!isAuthenticated) {
       throw new Error('Not authenticated with YouTube');
@@ -74,7 +75,7 @@ export function useYoutubeAuth() {
 
     try {
       setIsUploading(true);
-      const videoUrl = await youtubeClient.uploadVideo(videoBlob, title, description, tags);
+      const videoUrl = await youtubeClient.uploadVideo(videoBlob, title, description, tags, isPrivate);
       return videoUrl;
     } finally {
       setIsUploading(false);
