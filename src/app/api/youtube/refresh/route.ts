@@ -6,11 +6,11 @@ import { setAuthTokens, AuthSource } from '../utils';
 export async function POST() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get('refresh_token')?.value;
-  
+
   if (!refreshToken) {
     return NextResponse.json({ error: 'No refresh token available' }, { status: 401 });
   }
-
+  
   try {
     oauth2Client.setCredentials({
       refresh_token: refreshToken

@@ -18,18 +18,20 @@ export interface YouTubeChannelInfo {
 
 export class YouTubeClient {
   private channelInfo: YouTubeChannelInfo | null = null;
+  private isLoggedIn: boolean = false; // used to track authentication state in frontend
 
   constructor() {
     if (typeof window !== 'undefined') {
       this.loadChannelInfo();
+      this.isLoggedIn = localStorage.getItem('loggedIn') === 'true';
     }
   }
 
   private loadChannelInfo() {
     if (typeof window === 'undefined') return;
-    
+
     const savedChannelInfo = localStorage.getItem('youtubeChannelInfo');
-    
+
     if (savedChannelInfo) {
       try {
         this.channelInfo = JSON.parse(savedChannelInfo);
@@ -47,14 +49,26 @@ export class YouTubeClient {
     }
   }
 
+  private updateAuthState(loggedIn: boolean): void {
+    this.isLoggedIn = loggedIn;
+    if (typeof window !== 'undefined') {
+      if (loggedIn) {
+        localStorage.setItem('loggedIn', 'true');
+      } else {
+        localStorage.removeItem('loggedIn');
+      }
+    }
+  }
+
   async authenticate(): Promise<string> {
     const response = await fetch('/api/youtube');
     const data = await response.json();
-    
+
     if (!data.authUrl) {
       throw new Error('No auth URL received');
     }
-    
+
+    this.updateAuthState(true);
     return data.authUrl;
   }
 
@@ -70,9 +84,11 @@ export class YouTubeClient {
         throw new Error(data.error || 'Failed to authenticate with preconfigured account');
       }
 
+      this.updateAuthState(true);
       return true;
     } catch (error) {
       console.error('Error authenticating with preconfigured account:', error);
+      this.updateAuthState(false);
       return false;
     }
   }
@@ -81,16 +97,16 @@ export class YouTubeClient {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
     const error = searchParams.get('error');
-    
+
     if (error) {
       console.error('Auth error:', error);
       return false;
     }
-    
+
     if (!code) {
       return false;
     }
-    
+
     return true;
   }
 
@@ -100,14 +116,17 @@ export class YouTubeClient {
         method: 'POST',
         credentials: 'include',
       });
-  
+
       if (!response.ok) {
+        this.updateAuthState(false);
         return false;
       }
       await response.json();
+      this.updateAuthState(true);
       return true;
     } catch (error) {
       console.error('Error refreshing access token:', error);
+      this.updateAuthState(false);
       return false;
     }
   }
@@ -119,6 +138,7 @@ export class YouTubeClient {
     let response = await fetch(input, { ...init, credentials: 'include' });
 
     if (response.status === 401) {
+      this.updateAuthState(false);
       const refreshed = await this.refreshAccessToken();
       if (refreshed) {
         response = await fetch(input, { ...init, credentials: 'include' });
@@ -127,16 +147,16 @@ export class YouTubeClient {
 
     return response;
   }
-  
+
   async uploadVideo(
-    videoBlob: Blob, 
-    title: string, 
-    description: string, 
+    videoBlob: Blob,
+    title: string,
+    description: string,
     tags?: string[],
     privacyStatus: PrivacyStatus = PrivacyStatus.PRIVATE
   ): Promise<string> {
     const startTime = Date.now();
-    
+
     // Convert blob to base64
     const base64data = await new Promise<string>((resolve) => {
       const reader = new FileReader();
@@ -163,7 +183,7 @@ export class YouTubeClient {
     });
 
     const data = await response.json();
-    
+
     if (!data.success) {
       throw new Error(data.error || 'Failed to upload to YouTube');
     }
@@ -175,17 +195,24 @@ export class YouTubeClient {
   }
 
   async isAuthenticated(): Promise<boolean> {
+    if (!this.isLoggedIn) {
+      return false;
+    }
+
     try {
       const response = await this.fetchWithAuthRetry('/api/youtube/channel');
-      
+
       if (response.ok) {
         const data = await response.json();
         this.saveChannelInfo(data);
+        this.updateAuthState(true);
         return true;
       }
+      this.updateAuthState(false);
       return false;
     } catch (error) {
       console.error('Error checking authentication:', error);
+      this.updateAuthState(false);
       return false;
     }
   }
@@ -203,6 +230,7 @@ export class YouTubeClient {
     const response = await this.fetchWithAuthRetry('/api/youtube/channel');
 
     if (!response.ok) {
+      this.updateAuthState(false);
       throw new Error('Failed to fetch channel information');
     }
 
@@ -213,6 +241,7 @@ export class YouTubeClient {
 
   logout(): void {
     this.channelInfo = null;
+    this.updateAuthState(false);
     if (typeof window !== 'undefined') {
       localStorage.removeItem('youtubeChannelInfo');
     }

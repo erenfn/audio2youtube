@@ -11,7 +11,7 @@ export async function GET(request: Request) {
   
   if (!accessToken) {
     console.error('Missing access token cookie');
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return NextResponse.json({ error: 'Missing access token cookie' }, { status: 401 });
   }
 
   oauth2Client.setCredentials({ access_token: accessToken });
@@ -39,6 +39,12 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error('Error fetching channel info:', error);
     if (error instanceof Error) {
+      // Check if it's a 401 unauthorized error
+      if (error.message.includes('invalid authentication credentials') || 
+          (error as any).code === 401 || 
+          (error as any).status === 401) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
       console.error('Error details:', {
         message: error.message,
         stack: error.stack,
