@@ -58,6 +58,29 @@ export function useYoutubeAuth() {
     }
   }, []);
 
+  const authenticateWithPreconfigured = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const success = await youtubeClient.authenticateWithPreconfigured();
+      if (success) {
+        const isAuth = await youtubeClient.isAuthenticated();
+        setIsAuthenticated(isAuth);
+        if (isAuth) {
+          toast.success('Successfully authenticated with preconfigured YouTube account');
+        } else {
+          toast.error('Failed to authenticate with preconfigured account');
+        }
+      } else {
+        toast.error('Failed to authenticate with preconfigured account');
+      }
+    } catch (error) {
+      console.error('Preconfigured authentication error:', error);
+      toast.error('Failed to authenticate with preconfigured account');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const logout = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -99,6 +122,7 @@ export function useYoutubeAuth() {
     isLoading,
     isUploading,
     authenticate,
+    authenticateWithPreconfigured,
     logout,
     uploadVideo
   };

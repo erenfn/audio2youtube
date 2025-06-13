@@ -39,6 +39,7 @@ export default function FileUploadValidationDemo() {
     isUploading,
     isLoading,
     authenticate,
+    authenticateWithPreconfigured,
     logout,
     uploadVideo
   } = useYoutubeAuth();
@@ -173,6 +174,7 @@ export default function FileUploadValidationDemo() {
           onTagsChange={setYoutubeTags}
           onPrivacyChange={setPrivacyStatus}
           onAuthenticate={authenticate}
+          onAuthenticatePreconfigured={authenticateWithPreconfigured}
           onLogout={logout}
           onUpload={handleYoutubeUpload}
         />

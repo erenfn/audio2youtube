@@ -21,6 +21,7 @@ interface YouTubeSectionProps {
   onTagsChange: (tags: string[]) => void;
   onPrivacyChange: (status: PrivacyStatus) => void;
   onAuthenticate: () => void;
+  onAuthenticatePreconfigured: () => void;
   onLogout: () => void;
   onUpload: () => void;
 }
@@ -39,6 +40,7 @@ export function YouTubeSection({
   onTagsChange,
   onPrivacyChange,
   onAuthenticate,
+  onAuthenticatePreconfigured,
   onLogout,
   onUpload,
 }: YouTubeSectionProps) {
@@ -94,7 +96,7 @@ export function YouTubeSection({
             onPrivacyChange={onPrivacyChange}
           />
         )}
-        
+
         <Button
           variant="outline"
           className="w-full mt-2"
@@ -105,9 +107,28 @@ export function YouTubeSection({
           {isAuthenticated ? 'Upload to YouTube' : 'Connect YouTube Account'}
         </Button>
 
+        {!isAuthenticated && (
+          <>
+            <div className="relative my-2 flex items-center">
+              <span className="w-full border-t" />
+              <span className="mx-2 bg-background px-2 text-xs uppercase text-muted-foreground">or</span>
+              <span className="w-full border-t" />
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={onAuthenticatePreconfigured}
+              disabled={isUploading || isLoading}
+            >
+              Use preconfigured account
+            </Button>
+          </>
+        )}
+
         {isLoading && (
           <div className="flex items-center justify-center py-4">
-            <Spinner size="medium" show={true}/>
+            <Spinner size="medium" show={true} />
           </div>
         )}
 

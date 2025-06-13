@@ -58,6 +58,25 @@ export class YouTubeClient {
     return data.authUrl;
   }
 
+  async authenticateWithPreconfigured(): Promise<boolean> {
+    try {
+      const response = await fetch('/api/youtube/preconfigured', {
+        method: 'POST',
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to authenticate with preconfigured account');
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error authenticating with preconfigured account:', error);
+      return false;
+    }
+  }
+
   handleAuthCallback(): boolean {
     const searchParams = new URLSearchParams(window.location.search);
     const code = searchParams.get('code');
@@ -83,7 +102,6 @@ export class YouTubeClient {
       });
   
       if (!response.ok) {
-        console.error('Failed to refresh access token');
         return false;
       }
       await response.json();

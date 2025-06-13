@@ -35,7 +35,29 @@ audio2youtube is a web application that lets users upload audio files (MP3, WAV,
 
 <pre>GOOGLE_CLIENT_ID= 
 GOOGLE_CLIENT_SECRET= 
-FRONTEND_URL=  </pre>
+FRONTEND_URL=  
+YOUTUBE_REFRESH_TOKEN=</pre>
+
+## Getting Your YouTube Refresh Token
+
+To get your YouTube refresh token, follow these steps:
+
+1. Go to [Google OAuth Playground](https://developers.google.com/oauthplayground/)
+
+2. Click the gear icon (⚙️) in the top right corner
+   - Select "Use your own OAuth credentials"
+   - Enter your OAuth credentials
+
+3. In Step 1:
+   - Find and select "YouTube Data API v3"
+   - Check both required scopes:
+     - `https://www.googleapis.com/auth/youtube.upload`
+     - `https://www.googleapis.com/auth/youtube.readonly`
+   - Click "Authorize APIs"
+
+4. In Step 2:
+   - Click "Exchange authorization code for tokens"
+   - Your refresh token will be displayed in the response
 
 ## To run the project
 

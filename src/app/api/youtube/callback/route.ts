@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { oauth2Client, FRONTEND_URL, REDIRECT_URI } from '../config';
 import { cookies } from 'next/headers';
+import { setAuthTokens, AuthSource } from '../utils';
 
 export async function GET(request: Request) {
   try {
@@ -20,31 +21,11 @@ export async function GET(request: Request) {
       redirect_uri: REDIRECT_URI,
     });
 
-    const response = NextResponse.redirect(`${FRONTEND_URL}?auth=success`);
-
-    // Log token expiration
-    const expiryDate = tokens.expiry_date ? new Date(tokens.expiry_date) : new Date(Date.now() + 3600000);
-    console.log('Initial auth - Access token expires at:', expiryDate.toLocaleString());
-
-    // Set access token cookie
-    response.cookies.set('access_token', tokens.access_token!, {
-      httpOnly: true,
-      sameSite: 'lax',
-      path: '/',
-      maxAge: tokens.expiry_date ? Math.floor((tokens.expiry_date - Date.now()) / 1000) : 3600
+    return setAuthTokens({ 
+      tokens, 
+      source: AuthSource.INITIAL
     });
 
-    // Set refresh token cookie
-    if (tokens.refresh_token) {
-      response.cookies.set('refresh_token', tokens.refresh_token, {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 30 * 24 * 60 * 60 // 30 days
-      });
-    }
-
-    return response;
   } catch (error: any) {
     console.error('Token exchange failed', {
       message: error.message,

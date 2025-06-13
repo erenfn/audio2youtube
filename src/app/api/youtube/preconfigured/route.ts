@@ -1,14 +1,12 @@
 import { NextResponse } from 'next/server';
 import { oauth2Client } from '../config';
-import { cookies } from 'next/headers';
 import { setAuthTokens, AuthSource } from '../utils';
 
 export async function POST() {
-  const cookieStore = await cookies();
-  const refreshToken = cookieStore.get('refresh_token')?.value;
+  const refreshToken = process.env.YOUTUBE_REFRESH_TOKEN;
   
   if (!refreshToken) {
-    return NextResponse.json({ error: 'No refresh token available' }, { status: 401 });
+    return NextResponse.json({ error: 'No preconfigured refresh token available' }, { status: 401 });
   }
 
   try {
@@ -18,17 +16,17 @@ export async function POST() {
 
     const { credentials } = await oauth2Client.refreshAccessToken();
     
-    return setAuthTokens({
+    return setAuthTokens({ 
       tokens: {
         access_token: credentials.access_token,
         refresh_token: refreshToken,
         expiry_date: credentials.expiry_date
-      },
-      source: AuthSource.REFRESH
+      }, 
+      source: AuthSource.REFRESH 
     });
 
   } catch (error) {
-    console.error('Error refreshing token:', error);
-    return NextResponse.json({ error: 'Failed to refresh token' }, { status: 500 });
+    console.error('Error authenticating with preconfigured account:', error);
+    return NextResponse.json({ error: 'Failed to authenticate with preconfigured account' }, { status: 500 });
   }
-}
+} 
